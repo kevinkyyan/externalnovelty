@@ -1,21 +1,22 @@
-# Baseline Characteristics NOVELTY vs. EPIC
+# Baseline Characteristics NOVELTY vs. EPIC-US
 
 
-- [1. Process EPIC Simulation Data](#1-process-epic-simulation-data)
+- [1. Process EPIC-US Simulation
+  Data](#1-process-epic-us-simulation-data)
 - [2. Generate Table 1 and Determine **Standardized Mean
   Difference**](#2-generate-table-1-and-determine-standardized-mean-difference)
 - [3. Visual Comparison](#3-visual-comparison)
-- [4. External Validation: Comparing EPIC and NOVELTY
-  Results](#4-external-validation-comparing-epic-and-novelty-results)
-- [5: External Validation: Comparing Rate of Exacerbations between EPIC
-  and
-  NOVELTY](#5-external-validation-comparing-rate-of-exacerbations-between-epic-and-novelty)
+- [4. External Validation: Comparing EPIC-US and NOVELTY
+  Results](#4-external-validation-comparing-epic-us-and-novelty-results)
+- [5: External Validation: Comparing Rate of Exacerbations between
+  EPIC-US and
+  NOVELTY](#5-external-validation-comparing-rate-of-exacerbations-between-epic-us-and-novelty)
 
 ------------------------------------------------------------------------
 
-## 1. Process EPIC Simulation Data
+## 1. Process EPIC-US Simulation Data
 
-The EPIC simulation (`epic_selected`) outputted from the Copula model
+The EPIC-US simulation (`epic_selected`) outputted from the Copula model
 are standardized into numeric formats (0/1 for binary and categorical,
 continuous for others) to facilitate statistical comparison.”
 
@@ -140,7 +141,7 @@ novelty_baseline <- tibble::tribble(
     NOV_SD = if_else(Type == "binary", sqrt(NOV_Mean * (1 - NOV_Mean)), NOV_SD_Reported)
   )
 
-# Calculate EPIC Cohort Stats
+# Calculate EPIC-US Cohort Stats
 epic_stats <- epic_baseline %>%
   summarise(across(everything(), list(
     Mean = ~mean(., na.rm = TRUE),
@@ -174,7 +175,7 @@ epic_novelty_baseline<- epic_novelty_calc %>%
       Type == "continuous" ~ sprintf("%.2f (%.2f)", NOV_Mean, NOV_SD),
       Type == "binary"     ~ sprintf("%.2f%%", NOV_Mean * 100)
     ),
-    `EPIC` = case_when(
+    `EPIC-US` = case_when(
       Type == "continuous" ~ sprintf("%.2f (%.2f)", EPIC_Mean, EPIC_SD),
       Type == "binary"     ~ sprintf("%.2f%%", EPIC_Mean * 100)
     ),
@@ -182,9 +183,9 @@ epic_novelty_baseline<- epic_novelty_calc %>%
     Status = if_else(SMD < 0.1, "🟢 Balanced", "🔴 Imbalanced"),
     SMD = sprintf("%.3f", SMD)
   ) %>%
-  select(Variable, `NOVELTY`, `EPIC`, SMD, Status)
+  select(Variable, `NOVELTY`, `EPIC-US`, SMD, Status)
 
-# Add number of NOVELTY and EPIC patients included for the baseline table
+# Add number of NOVELTY and EPIC-US patients included for the baseline table
 n_epic <- nrow(epic_baseline)      
 n_novelty <- "465"               
 
@@ -192,7 +193,7 @@ n_novelty <- "465"
 total_row <- tibble::tibble(
   Variable  = "Total Number of Patients (N)",
   `NOVELTY` = as.character(n_novelty),
-  `EPIC`    = as.character(n_epic),
+  `EPIC-US`    = as.character(n_epic),
   SMD       = "",                  # Leave blank (no SMD for sample size)
   Status    = ""                   # Leave blank (no status for sample size)
 )
@@ -201,10 +202,10 @@ total_row <- tibble::tibble(
 epic_novelty_baseline <- bind_rows(total_row, epic_novelty_baseline)
 
 # Print table
-kable(epic_novelty_baseline, caption = "Table 1: Comparison of NOVELTY vs. EPIC Cohort")
+kable(epic_novelty_baseline, caption = "Table 1: Comparison of NOVELTY vs. EPIC-US Cohort")
 ```
 
-| Variable                     | NOVELTY      | EPIC         | SMD   | Status      |
+| Variable                     | NOVELTY      | EPIC-US      | SMD   | Status      |
 |:-----------------------------|:-------------|:-------------|:------|:------------|
 | Total Number of Patients (N) | 465          | 10000        |       |             |
 | Age                          | 65.30 (9.30) | 65.70 (8.77) | 0.044 | 🟢 Balanced |
@@ -220,7 +221,7 @@ kable(epic_novelty_baseline, caption = "Table 1: Comparison of NOVELTY vs. EPIC 
 | Severe Exacerbation          | 0.23 (0.56)  | 0.21 (0.41)  | 0.043 | 🟢 Balanced |
 | mMRC (\>0)                   | 91.30%       | 90.74%       | 0.020 | 🟢 Balanced |
 
-Table 1: Comparison of NOVELTY vs. EPIC Cohort
+Table 1: Comparison of NOVELTY vs. EPIC-US Cohort
 
 ## 3. Visual Comparison
 
@@ -238,7 +239,7 @@ ggplot(plot_data, aes(x = SMD, y = reorder(Variable, SMD))) +
   geom_vline(xintercept = 0.1, linetype = "dashed", color = "red", alpha = 0.5) +
   geom_vline(xintercept = 0, color = "black") +
   labs(
-    title = "EPIC vs NOVELTY",
+    title = "EPIC-US vs NOVELTY",
     subtitle = "Standardized Mean Difference",
     x = "Absolute SMD",
     y = NULL
@@ -253,15 +254,15 @@ ggplot(plot_data, aes(x = SMD, y = reorder(Variable, SMD))) +
 
 ![](Figures/Figure1.png)
 
-## 4. External Validation: Comparing EPIC and NOVELTY Results
+## 4. External Validation: Comparing EPIC-US and NOVELTY Results
 
-This section executes the negative binomial model for the EPIC cohort to
-estimate exacerbation outcomes. The rate ratios are then compared
-between the NOVELTY and EPIC cohort.
+This section executes the negative binomial model for the EPIC-US cohort
+to estimate exacerbation outcomes. The rate ratios are then compared
+between the NOVELTY and EPIC-US cohort.
 
 ``` r
 # ==============================================================================
-# LOAD EPIC DATA 
+# LOAD EPIC-US DATA 
 # ==============================================================================
 
 # 'combined_histories' contains the full lifetime of every patient (creation to death).
@@ -277,12 +278,12 @@ if (!exists("combined_histories")) {
 }
 
 # ==============================================================================
-# LINKING DATASETS FOR THE EPIC SIMULATION
+# LINKING DATASETS FOR THE EPIC-US SIMULATION
 # ==============================================================================
 
 # Look up the selected patients using the 'id' + '.run_id' columns from epic_selected
-# The "id" represents the patient 'id' and the '.run_id' represents which EPIC run the patient was in
-# Because we run EPIC many times to find the appropriate match of patients,
+# The "id" represents the patient 'id' and the '.run_id' represents which EPIC-US run the patient was in
+# Because we run EPIC-US many times to find the appropriate match of patients,
 # looking for the 'id' + '.run_id' combination is to identify each unique patient included in the analysis
 index_lookup <- epic_selected %>%
   select(id, .run_id, index_time = local_time) %>%
@@ -317,7 +318,7 @@ history_EPIC <- combined_histories %>%
   arrange(unique_id, local_time)
 
 # ==============================================================================
-# CALCULATE NUMBER OF EXACERBATION EVENTS FOR EPIC COHORT
+# CALCULATE NUMBER OF EXACERBATION EVENTS FOR EPIC-US COHORT
 # ==============================================================================
 
 exac_data_EPIC <- history_EPIC %>%
@@ -340,7 +341,7 @@ exac_data_EPIC <- history_EPIC %>%
   ungroup()
 
 # ==============================================================================
-#  PREPARE EPIC DATASET FOR MODEL
+#  PREPARE EPIC-US DATASET FOR MODEL
 # ==============================================================================
 
 # Group 0 & 1 together to be the reference (No therapy or SABA only); 
@@ -375,7 +376,7 @@ analysis_EPIC_final <- exac_data_EPIC  %>%
   filter(exposure > 0.04)
 
 # ==============================================================================
-# MODEL EPIC EXABERATION RATE 
+# MODEL EPIC-US EXABERATION RATE 
 # ==============================================================================
 
 # This matches the methods used in the NOVELTY regression model
@@ -394,7 +395,7 @@ sev_exac_results <- glmmTMB(
 )
 
 # ==============================================================================
-# EPIC RESULTS OUTPUT
+# EPIC-US RESULTS OUTPUT
 # ==============================================================================
 
 # Extract and format Rate Ratios (RR)
@@ -442,7 +443,7 @@ novelty_results <- tibble::tribble(
 )
 
 # ==============================================================================
-# COMPARING NOVELTY vs. EPIC 
+# COMPARING NOVELTY vs. EPIC-US 
 # ==============================================================================
 
 validation_comparison <- novelty_results %>%
@@ -454,22 +455,22 @@ validation_comparison <- novelty_results %>%
   # FIXED: Naming columns to match the select() call below
   mutate(
     `NOVELTY` = sprintf("%.3f (%.3f, %.3f)", RR, Low, High),
-    `EPIC`    = sprintf("%.3f (%.3f, %.3f)", EPIC_RR, EPIC_Low, EPIC_High)
+    `EPIC-US`    = sprintf("%.3f (%.3f, %.3f)", EPIC_RR, EPIC_Low, EPIC_High)
   ) %>%
   # modify column names
   select(
     Outcome, 
     `Medication Category` = group, 
     `NOVELTY`, 
-    `EPIC`, 
+    `EPIC-US`, 
     `p value` = p_value
   )
 
 # Final formatted table comparing rate of exacerbations between NOVELTY and EPIC
-kable(validation_comparison, caption = "Table 2: EPIC vs NOVELTY Exacerbation Rate Ratios (95% CI)")
+kable(validation_comparison, caption = "Table 2: EPIC-US vs NOVELTY Exacerbation Rate Ratios (95% CI)")
 ```
 
-| Outcome | Medication Category | NOVELTY | EPIC | p value |
+| Outcome | Medication Category | NOVELTY | EPIC-US | p value |
 |:---|:---|:---|:---|:---|
 | Moderate Exacerbations | No Therapy (Reference) | 0.087 (0.043, 0.177) | 0.175 (0.167, 0.184) | \<0.001 |
 | Moderate Exacerbations | Monotherapy | 0.529 (0.159, 1.757) | 0.853 (0.796, 0.913) | \<0.001 |
@@ -480,12 +481,12 @@ kable(validation_comparison, caption = "Table 2: EPIC vs NOVELTY Exacerbation Ra
 | Severe Exacerbations | Dual Therapy | 3.108 (1.031, 9.373) | 2.156 (1.890, 2.460) | \<0.001 |
 | Severe Exacerbations | Triple Therapy | 5.446 (1.866, 15.898) | 3.090 (2.767, 3.450) | \<0.001 |
 
-Table 2: EPIC vs NOVELTY Exacerbation Rate Ratios (95% CI)
+Table 2: EPIC-US vs NOVELTY Exacerbation Rate Ratios (95% CI)
 
-## 5: External Validation: Comparing Rate of Exacerbations between EPIC and NOVELTY
+## 5: External Validation: Comparing Rate of Exacerbations between EPIC-US and NOVELTY
 
 This section compares the annual rate (per person per year) of moderate
-and severe exacerbations between NOVELTY and EPIC.
+and severe exacerbations between NOVELTY and EPIC-US.
 
 ``` r
 # ==============================================================================
@@ -510,7 +511,7 @@ novelty_rates <- novelty_results %>%
   mutate(NOV_Annual_Rate = sprintf("%.3f (%.3f, %.3f)", Annual_Rate, Annual_Low, Annual_High)) %>%
   select(Outcome, group, NOV_Annual_Rate)
 
-# Calculate EPIC Annualized Rates with 95% CI
+# Calculate EPIC-US Annualized Rates with 95% CI
 epic_rates <- results_EPIC %>%
   group_by(Outcome) %>%
   mutate(
@@ -525,7 +526,7 @@ epic_rates <- results_EPIC %>%
   mutate(EPIC_Annual_Rate = sprintf("%.3f (%.3f, %.3f)", Annual_Rate, Annual_Low, Annual_High)) %>%
   select(Outcome, group, EPIC_Annual_Rate)
 
-# Compare NOVELTY and EPIC
+# Compare NOVELTY and EPIC-US
 rate_comparison <- novelty_rates %>%
   left_join(epic_rates, by = c("Outcome", "group")) %>%
   #column name modification
@@ -533,13 +534,13 @@ rate_comparison <- novelty_rates %>%
     Outcome, 
     `Medication Category` = group, 
     `NOVELTY` = NOV_Annual_Rate, 
-    `EPIC` = EPIC_Annual_Rate
+    `EPIC-US` = EPIC_Annual_Rate
   )
 
 kable(rate_comparison, caption = "Table 3: Comparison of Average Annualized Exacerbation Rates (95% CI)")
 ```
 
-| Outcome | Medication Category | NOVELTY | EPIC |
+| Outcome | Medication Category | NOVELTY | EPIC-US |
 |:---|:---|:---|:---|
 | Moderate Exacerbations | No Therapy (Reference) | 0.087 (0.043, 0.177) | 0.175 (0.167, 0.184) |
 | Moderate Exacerbations | Monotherapy | 0.046 (0.007, 0.311) | 0.149 (0.133, 0.168) |
