@@ -1,26 +1,25 @@
----
-title: "Baseline Characteristics NOVELTY vs. EPIC"
-format: 
-  html:
-    toc: true
-    code-fold: true
-    theme: cosmo
-    self-contained: true
-    keep-md: true
----
+# Baseline Characteristics NOVELTY vs. EPIC
 
 
+- [1. Process EPIC Simulation Data](#1-process-epic-simulation-data)
+- [2. Generate Table 1 and Determine **Standardized Mean
+  Difference**](#2-generate-table-1-and-determine-standardized-mean-difference)
+- [3. Visual Comparison](#3-visual-comparison)
+- [4. External Validation: Comparing EPIC and NOVELTY
+  Results](#4-external-validation-comparing-epic-and-novelty-results)
+- [5: External Validation: Comparing Rate of Exacerbations between EPIC
+  and
+  NOVELTY](#5-external-validation-comparing-rate-of-exacerbations-between-epic-and-novelty)
 
 ------------------------------------------------------------------------
 
 ## 1. Process EPIC Simulation Data
 
-The EPIC simulation (`epic_selected`) outputted from the Copula model are standardized into numeric formats (0/1 for binary and categorical, continuous for others) to facilitate statistical comparison."
+The EPIC simulation (`epic_selected`) outputted from the Copula model
+are standardized into numeric formats (0/1 for binary and categorical,
+continuous for others) to facilitate statistical comparison.”
 
-
-::: {.cell}
-
-```{.r .cell-code}
+``` r
 # ==============================================================================
 #  DATA PREPARATION FOR ANALYSIS
 # ==============================================================================
@@ -105,17 +104,17 @@ epic_baseline <- epic_selected %>%
     `Former Smoker`  = as.integer(smoke_num == 2)
   )
 ```
-:::
-
 
 ## 2. Generate Table 1 and Determine **Standardized Mean Difference**
 
-Baseline characteristics are presented, reporting the Mean (SD) for continuous variables and counts with percentages for binary and categorical variables. The Standardized Mean Difference (SMD) is calculated to assess balance. For binary and categorical variables, SMDs are calculated by treating the variable as a binary (0/1) indicator, where the standard deviation is derived from the proportion.
+Baseline characteristics are presented, reporting the Mean (SD) for
+continuous variables and counts with percentages for binary and
+categorical variables. The Standardized Mean Difference (SMD) is
+calculated to assess balance. For binary and categorical variables, SMDs
+are calculated by treating the variable as a binary (0/1) indicator,
+where the standard deviation is derived from the proportion.
 
-
-::: {.cell}
-
-```{.r .cell-code}
+``` r
 # ==============================================================================
 #  STATISTICAL COMPARISON (SMD CALCULATION)
 # ==============================================================================
@@ -205,40 +204,31 @@ epic_novelty_baseline <- bind_rows(total_row, epic_novelty_baseline)
 kable(epic_novelty_baseline, caption = "Table 1: Comparison of NOVELTY vs. EPIC Cohort")
 ```
 
-::: {.cell-output-display}
+| Variable                     | NOVELTY      | EPIC         | SMD   | Status      |
+|:-----------------------------|:-------------|:-------------|:------|:------------|
+| Total Number of Patients (N) | 465          | 10000        |       |             |
+| Age                          | 65.30 (9.30) | 65.70 (8.77) | 0.044 | 🟢 Balanced |
+| Female                       | 40.30%       | 41.53%       | 0.025 | 🟢 Balanced |
+| GOLD 1                       | 4.70%        | 5.34%        | 0.029 | 🟢 Balanced |
+| GOLD 2                       | 39.60%       | 41.48%       | 0.038 | 🟢 Balanced |
+| GOLD 3                       | 39.80%       | 39.36%       | 0.009 | 🟢 Balanced |
+| GOLD 4                       | 15.90%       | 13.82%       | 0.059 | 🟢 Balanced |
+| Never Smoker                 | 5.80%        | 6.17%        | 0.016 | 🟢 Balanced |
+| Current Smoker               | 34.20%       | 34.34%       | 0.003 | 🟢 Balanced |
+| Former Smoker                | 60.00%       | 59.49%       | 0.010 | 🟢 Balanced |
+| Moderate Exacerbation        | 0.28 (0.68)  | 0.25 (0.47)  | 0.058 | 🟢 Balanced |
+| Severe Exacerbation          | 0.23 (0.56)  | 0.21 (0.41)  | 0.043 | 🟢 Balanced |
+| mMRC (\>0)                   | 91.30%       | 90.74%       | 0.020 | 🟢 Balanced |
 
-
-Table: Table 1: Comparison of NOVELTY vs. EPIC Cohort
-
-|Variable                     |NOVELTY      |EPIC         |SMD   |Status      |
-|:----------------------------|:------------|:------------|:-----|:-----------|
-|Total Number of Patients (N) |465          |10000        |      |            |
-|Age                          |65.30 (9.30) |65.70 (8.77) |0.044 |🟢 Balanced |
-|Female                       |40.30%       |41.53%       |0.025 |🟢 Balanced |
-|GOLD 1                       |4.70%        |5.34%        |0.029 |🟢 Balanced |
-|GOLD 2                       |39.60%       |41.48%       |0.038 |🟢 Balanced |
-|GOLD 3                       |39.80%       |39.36%       |0.009 |🟢 Balanced |
-|GOLD 4                       |15.90%       |13.82%       |0.059 |🟢 Balanced |
-|Never Smoker                 |5.80%        |6.17%        |0.016 |🟢 Balanced |
-|Current Smoker               |34.20%       |34.34%       |0.003 |🟢 Balanced |
-|Former Smoker                |60.00%       |59.49%       |0.010 |🟢 Balanced |
-|Moderate Exacerbation        |0.28 (0.68)  |0.25 (0.47)  |0.058 |🟢 Balanced |
-|Severe Exacerbation          |0.23 (0.56)  |0.21 (0.41)  |0.043 |🟢 Balanced |
-|mMRC (>0)                    |91.30%       |90.74%       |0.020 |🟢 Balanced |
-
-
-:::
-:::
-
+Table 1: Comparison of NOVELTY vs. EPIC Cohort
 
 ## 3. Visual Comparison
 
-Below is a visualization of the Standardized Mean Differences (SMD) for the baseline characteristics. The red dashed line at **0.1** represents the SMD threshold representing a balanced comparative cohort.
+Below is a visualization of the Standardized Mean Differences (SMD) for
+the baseline characteristics. The red dashed line at **0.1** represents
+the SMD threshold representing a balanced comparative cohort.
 
-
-::: {.cell}
-
-```{.r .cell-code}
+``` r
 plot_data <- epic_novelty_calc
 
 # Generate Plot
@@ -261,20 +251,15 @@ ggplot(plot_data, aes(x = SMD, y = reorder(Variable, SMD))) +
   )
 ```
 
-::: {.cell-output-display}
-![](Figures/Figure1.png){width=672}
-:::
-:::
-
+![](Figures/Figure1.png)
 
 ## 4. External Validation: Comparing EPIC and NOVELTY Results
 
-This section executes the negative binomial model for the EPIC cohort to estimate exacerbation outcomes. The rate ratios are then compared between the NOVELTY and EPIC cohort.
+This section executes the negative binomial model for the EPIC cohort to
+estimate exacerbation outcomes. The rate ratios are then compared
+between the NOVELTY and EPIC cohort.
 
-
-::: {.cell}
-
-```{.r .cell-code}
+``` r
 # ==============================================================================
 # LOAD EPIC DATA 
 # ==============================================================================
@@ -484,35 +469,25 @@ validation_comparison <- novelty_results %>%
 kable(validation_comparison, caption = "Table 2: EPIC vs NOVELTY Exacerbation Rate Ratios (95% CI)")
 ```
 
-::: {.cell-output-display}
+| Outcome | Medication Category | NOVELTY | EPIC | p value |
+|:---|:---|:---|:---|:---|
+| Moderate Exacerbations | No Therapy (Reference) | 0.087 (0.043, 0.177) | 0.175 (0.167, 0.184) | \<0.001 |
+| Moderate Exacerbations | Monotherapy | 0.529 (0.159, 1.757) | 0.853 (0.796, 0.913) | \<0.001 |
+| Moderate Exacerbations | Dual Therapy | 0.538 (0.220, 1.315) | 1.296 (1.197, 1.404) | \<0.001 |
+| Moderate Exacerbations | Triple Therapy | 1.212 (0.566, 2.597) | 1.903 (1.779, 2.036) | \<0.001 |
+| Severe Exacerbations | No Therapy (Reference) | 0.022 (0.008, 0.065) | 0.039 (0.035, 0.043) | \<0.001 |
+| Severe Exacerbations | Monotherapy | 2.283 (0.638, 8.167) | 0.752 (0.664, 0.851) | \<0.001 |
+| Severe Exacerbations | Dual Therapy | 3.108 (1.031, 9.373) | 2.156 (1.890, 2.460) | \<0.001 |
+| Severe Exacerbations | Triple Therapy | 5.446 (1.866, 15.898) | 3.090 (2.767, 3.450) | \<0.001 |
 
-
-Table: Table 2: EPIC vs NOVELTY Exacerbation Rate Ratios (95% CI)
-
-|Outcome                |Medication Category    |NOVELTY               |EPIC                 |p value |
-|:----------------------|:----------------------|:---------------------|:--------------------|:-------|
-|Moderate Exacerbations |No Therapy (Reference) |0.087 (0.043, 0.177)  |0.175 (0.167, 0.184) |<0.001  |
-|Moderate Exacerbations |Monotherapy            |0.529 (0.159, 1.757)  |0.853 (0.796, 0.913) |<0.001  |
-|Moderate Exacerbations |Dual Therapy           |0.538 (0.220, 1.315)  |1.296 (1.197, 1.404) |<0.001  |
-|Moderate Exacerbations |Triple Therapy         |1.212 (0.566, 2.597)  |1.903 (1.779, 2.036) |<0.001  |
-|Severe Exacerbations   |No Therapy (Reference) |0.022 (0.008, 0.065)  |0.039 (0.035, 0.043) |<0.001  |
-|Severe Exacerbations   |Monotherapy            |2.283 (0.638, 8.167)  |0.752 (0.664, 0.851) |<0.001  |
-|Severe Exacerbations   |Dual Therapy           |3.108 (1.031, 9.373)  |2.156 (1.890, 2.460) |<0.001  |
-|Severe Exacerbations   |Triple Therapy         |5.446 (1.866, 15.898) |3.090 (2.767, 3.450) |<0.001  |
-
-
-:::
-:::
-
+Table 2: EPIC vs NOVELTY Exacerbation Rate Ratios (95% CI)
 
 ## 5: External Validation: Comparing Rate of Exacerbations between EPIC and NOVELTY
 
-This section compares the annual rate (per person per year) of moderate and severe exacerbations between NOVELTY and EPIC.
+This section compares the annual rate (per person per year) of moderate
+and severe exacerbations between NOVELTY and EPIC.
 
-
-::: {.cell}
-
-```{.r .cell-code}
+``` r
 # ==============================================================================
 # ANNUAL EXACERBATION RATES
 # ==============================================================================
@@ -564,23 +539,15 @@ rate_comparison <- novelty_rates %>%
 kable(rate_comparison, caption = "Table 3: Comparison of Average Annualized Exacerbation Rates (95% CI)")
 ```
 
-::: {.cell-output-display}
+| Outcome | Medication Category | NOVELTY | EPIC |
+|:---|:---|:---|:---|
+| Moderate Exacerbations | No Therapy (Reference) | 0.087 (0.043, 0.177) | 0.175 (0.167, 0.184) |
+| Moderate Exacerbations | Monotherapy | 0.046 (0.007, 0.311) | 0.149 (0.133, 0.168) |
+| Moderate Exacerbations | Dual Therapy | 0.047 (0.009, 0.233) | 0.227 (0.200, 0.258) |
+| Moderate Exacerbations | Triple Therapy | 0.105 (0.024, 0.460) | 0.333 (0.297, 0.375) |
+| Severe Exacerbations | No Therapy (Reference) | 0.022 (0.008, 0.065) | 0.039 (0.035, 0.043) |
+| Severe Exacerbations | Monotherapy | 0.050 (0.005, 0.531) | 0.029 (0.023, 0.037) |
+| Severe Exacerbations | Dual Therapy | 0.068 (0.008, 0.609) | 0.084 (0.066, 0.106) |
+| Severe Exacerbations | Triple Therapy | 0.120 (0.015, 1.033) | 0.121 (0.097, 0.148) |
 
-
-Table: Table 3: Comparison of Average Annualized Exacerbation Rates (95% CI)
-
-|Outcome                |Medication Category    |NOVELTY              |EPIC                 |
-|:----------------------|:----------------------|:--------------------|:--------------------|
-|Moderate Exacerbations |No Therapy (Reference) |0.087 (0.043, 0.177) |0.175 (0.167, 0.184) |
-|Moderate Exacerbations |Monotherapy            |0.046 (0.007, 0.311) |0.149 (0.133, 0.168) |
-|Moderate Exacerbations |Dual Therapy           |0.047 (0.009, 0.233) |0.227 (0.200, 0.258) |
-|Moderate Exacerbations |Triple Therapy         |0.105 (0.024, 0.460) |0.333 (0.297, 0.375) |
-|Severe Exacerbations   |No Therapy (Reference) |0.022 (0.008, 0.065) |0.039 (0.035, 0.043) |
-|Severe Exacerbations   |Monotherapy            |0.050 (0.005, 0.531) |0.029 (0.023, 0.037) |
-|Severe Exacerbations   |Dual Therapy           |0.068 (0.008, 0.609) |0.084 (0.066, 0.106) |
-|Severe Exacerbations   |Triple Therapy         |0.120 (0.015, 1.033) |0.121 (0.097, 0.148) |
-
-
-:::
-:::
-
+Table 3: Comparison of Average Annualized Exacerbation Rates (95% CI)
