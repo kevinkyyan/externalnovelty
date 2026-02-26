@@ -1,9 +1,9 @@
-# External Validation of EPIC-US using NOVELTY
+# External Validation of EPIC-US to the NOVELTY Trial
 
 ## Overview
 This repository contains the codebase for the external validation of the EPIC-US to the the NOVELTY observational study. 
 
-## Repository Structure & Key Files
+## Repository Structure and Key Files
 
 * **`Copula Model.R`**
   This details the joint distribution of patient characteristics in NOVELTY 
